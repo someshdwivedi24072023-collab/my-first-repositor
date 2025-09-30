@@ -28,7 +28,7 @@ class GroqLLMFilter:
             raise ValueError("Groq API key must be provided via parameter or GROQ_API_KEY environment variable")
         
         self.base_url = "https://api.groq.com/openai/v1/chat/completions"
-        self.model = "llama3-8b-8192"  # Fast and efficient model
+        self.model = "llama-3.1-8b-instant"  # Fast and efficient model
         self.timeout = 30
         
     def filter_articles(self, articles: List[Dict[str, str]], config: FilterConfig) -> List[Dict[str, Any]]:
