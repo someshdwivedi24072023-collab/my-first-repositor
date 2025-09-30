@@ -9,6 +9,8 @@ This repository contains web scraping tools to extract article information from 
 - `intelligent_filter.py` - AI-powered article filtering using Groq LLM
 - `filter_config.json` - Configuration file for filtering parameters
 - `test_filter.py` - Test suite for the intelligent filtering functionality
+- `demo.py` - Interactive demo showcasing all features
+- `demo_auto.py` - Automated demo (non-interactive)
 - `requirements.txt` - Python dependencies
 
 ## Setup
@@ -44,6 +46,12 @@ python intelligent_filter.py
 ### Test the Intelligent Filter
 ```bash
 python test_filter.py
+```
+
+### Run Demos
+```bash
+python demo_auto.py        # Quick automated demo
+python demo.py            # Interactive demo with detailed explanations
 ```
 
 ## 🤖 Intelligent Article Filtering
