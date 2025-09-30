@@ -40,24 +40,48 @@ python demo_auto.py
 
 ## Example Output for Page 10
 
+### Before Exclusion Filtering:
 ✅ **Successfully scraped 14 articles**  
-🤖 **AI filtered 11 articles as highly relevant**  
+🤖 **AI filtered 11 articles as highly relevant (79% relevance rate)**  
 📊 **Relevance scores: 0.80 - 1.00**  
 
-### Top Results:
+### After Exclusion Filtering:
+✅ **Successfully scraped 14 articles**  
+🤖 **AI filtered 2 articles as highly relevant (14% relevance rate, 85% exclusion rate)**  
+📊 **Relevance scores: 1.00**  
+
+### Top Results (Post-Exclusion):
 - Closing the last loophole for unhackable quantum security (1.00)
 - Quantum technology set to hit the streets within two years (1.00)
-- Basic quantum computation achieved with silicon for first time (1.00)
-- Where does quantum weirdness end? (1.00)
-- Quantum weirdness proved real in first loophole-free experiment (1.00)
+
+**Successfully Excluded**: Quantum computing articles, theoretical physics papers, and qubit research
 
 ## Configuration
 
 Edit `filter_config.json` to customize:
-- Keywords to match
-- Relevance threshold
-- Maximum articles to process
-- LLM model settings
+- **Primary keyword**: Main topic to search for (e.g., "quantum")
+- **Additional keywords**: Related terms to boost relevance (e.g., "energy", "battery", "sensor")
+- **Exclusion keywords**: Topics to exclude (e.g., "quantum computing", "qubits", "QPU")
+- **Relevance threshold**: Minimum score to include articles (0.0-1.0)
+- **Maximum articles to process**: Limit for batch processing
+
+### Exclusion Filtering
+The system now supports intelligent exclusion of unwanted topics:
+```json
+{
+    "exclusion_keywords": [
+        "quantum computing",
+        "qubits", 
+        "QPU",
+        "theoretical physics"
+    ]
+}
+```
+
+This dramatically improves filtering precision by excluding articles about:
+- Pure quantum computing research
+- Theoretical quantum physics without practical applications
+- Quantum processor/qubit development
 
 ## Troubleshooting
 
