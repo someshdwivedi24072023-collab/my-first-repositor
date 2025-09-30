@@ -11,7 +11,21 @@
         "storage",
         "efficiency"
     ],
+    "exclusion_keywords": [
+        "quantum computing",
+        "qubits",
+        "QPU",
+        "quantum computer",
+        "quantum processor",
+        "quantum algorithm",
+        "quantum gate",
+        "quantum circuit",
+        "theoretical physics",
+        "quantum mechanics theory",
+        "quantum interpretation",
+        "quantum foundation"
+    ],
     "relevance_threshold": 0.6,
     "max_articles_to_process": 20,
-    "description": "Configuration for filtering quantum science articles with focus on practical applications in energy, sensing, and storage technologies"
+    "description": "Configuration for filtering quantum science articles with focus on practical applications in energy, sensing, and storage technologies. Excludes quantum computing and purely theoretical articles."
 }

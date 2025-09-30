@@ -16,6 +16,7 @@ def test_config_loading():
         print(f"✅ Configuration loaded successfully:")
         print(f"   Primary keyword: {config.primary_keyword}")
         print(f"   Additional keywords: {', '.join(config.additional_keywords)}")
+        print(f"   Exclusion keywords: {', '.join(config.exclusion_keywords) if config.exclusion_keywords else 'None'}")
         print(f"   Relevance threshold: {config.relevance_threshold}")
         print(f"   Max articles to process: {config.max_articles_to_process}")
         return True
@@ -49,6 +50,7 @@ def test_filter_prompt_generation():
         config = FilterConfig(
             primary_keyword="quantum",
             additional_keywords=["energy", "storage", "efficiency"],
+            exclusion_keywords=["quantum computing", "qubits", "QPU"],
             relevance_threshold=0.6
         )
         
@@ -66,6 +68,8 @@ def test_filter_prompt_generation():
         print(f"   Prompt length: {len(prompt)} characters")
         print(f"   Contains primary keyword: {'quantum' in prompt}")
         print(f"   Contains additional keywords: {all(kw in prompt for kw in ['energy', 'storage', 'efficiency'])}")
+        print(f"   Contains exclusion keywords: {all(kw in prompt for kw in ['quantum computing', 'qubits', 'QPU'])}")
+        print(f"   Contains exclusion instructions: {'EXCLUDE' in prompt}")
         
         return True
         
@@ -82,7 +86,7 @@ def test_json_config_structure():
             config_data = json.load(f)
         
         required_fields = ["primary_keyword", "additional_keywords"]
-        optional_fields = ["relevance_threshold", "max_articles_to_process", "description"]
+        optional_fields = ["exclusion_keywords", "relevance_threshold", "max_articles_to_process", "description"]
         
         # Check required fields
         for field in required_fields:
@@ -102,6 +106,9 @@ def test_json_config_structure():
         print("✅ JSON configuration structure is valid")
         print(f"   Primary keyword: {config_data['primary_keyword']}")
         print(f"   Additional keywords count: {len(config_data['additional_keywords'])}")
+        
+        if "exclusion_keywords" in config_data:
+            print(f"   Exclusion keywords count: {len(config_data['exclusion_keywords'])}")
         
         if "description" in config_data:
             print(f"   Description: {config_data['description']}")

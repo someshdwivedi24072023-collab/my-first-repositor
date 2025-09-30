@@ -15,8 +15,14 @@ class FilterConfig:
     """Configuration for article filtering."""
     primary_keyword: str
     additional_keywords: List[str]
+    exclusion_keywords: List[str] = None
     relevance_threshold: float = 0.7
     max_articles_to_process: int = 50
+    
+    def __post_init__(self):
+        """Initialize exclusion_keywords as empty list if None."""
+        if self.exclusion_keywords is None:
+            self.exclusion_keywords = []
 
 class GroqLLMFilter:
     """Intelligent article filter using Groq LLM API."""
@@ -87,11 +93,21 @@ class GroqLLMFilter:
             articles_text += f"{i}. Title: {article['title']}\n   URL: {article['url']}\n\n"
         
         additional_keywords_str = ", ".join(config.additional_keywords)
+        exclusion_keywords_str = ", ".join(config.exclusion_keywords) if config.exclusion_keywords else "None"
         
-        prompt = f"""You are an expert content analyst specializing in scientific and technology articles. Your task is to analyze the following articles and determine their relevance based on specific keywords.
+        exclusion_section = ""
+        if config.exclusion_keywords:
+            exclusion_section = f"""
+EXCLUSION CRITERIA:
+- EXCLUDE articles primarily about: {exclusion_keywords_str}
+- EXCLUDE theoretical quantum physics without practical applications
+- EXCLUDE pure quantum computing research without energy/sensing applications
+"""
+        
+        prompt = f"""You are an expert content analyst specializing in scientific and technology articles. Your task is to analyze the following articles and determine their relevance based on specific keywords while excluding certain topics.
 
 PRIMARY KEYWORD: "{config.primary_keyword}"
-ADDITIONAL KEYWORDS: {additional_keywords_str}
+ADDITIONAL KEYWORDS: {additional_keywords_str}{exclusion_section}
 
 ARTICLES TO ANALYZE:
 {articles_text}
@@ -99,16 +115,18 @@ ARTICLES TO ANALYZE:
 INSTRUCTIONS:
 1. For each article, analyze the title for relevance to the primary keyword "{config.primary_keyword}"
 2. Check if the article also relates to any of the additional keywords: {additional_keywords_str}
-3. Assign a relevance score from 0.0 to 1.0 where:
-   - 1.0 = Highly relevant (directly about {config.primary_keyword} AND mentions additional keywords)
-   - 0.8 = Very relevant (directly about {config.primary_keyword} with some connection to additional keywords)
-   - 0.6 = Moderately relevant (about {config.primary_keyword} but limited connection to additional keywords)
-   - 0.4 = Somewhat relevant (mentions {config.primary_keyword} but not the main focus)
-   - 0.2 = Barely relevant (tangential mention of {config.primary_keyword})
-   - 0.0 = Not relevant (no meaningful connection to {config.primary_keyword})
+3. IMPORTANT: EXCLUDE articles that are primarily about: {exclusion_keywords_str}
+4. EXCLUDE articles about theoretical quantum physics without practical applications
+5. Assign a relevance score from 0.0 to 1.0 where:
+   - 1.0 = Highly relevant (directly about {config.primary_keyword} AND mentions additional keywords, NOT excluded topics)
+   - 0.8 = Very relevant (directly about {config.primary_keyword} with some connection to additional keywords, NOT excluded topics)
+   - 0.6 = Moderately relevant (about {config.primary_keyword} but limited connection to additional keywords, NOT excluded topics)
+   - 0.4 = Somewhat relevant (mentions {config.primary_keyword} but not the main focus, NOT excluded topics)
+   - 0.2 = Barely relevant (tangential mention of {config.primary_keyword}, NOT excluded topics)
+   - 0.0 = Not relevant OR excluded topic (no meaningful connection to {config.primary_keyword} OR matches exclusion criteria)
 
-4. Only include articles with relevance score >= {config.relevance_threshold}
-5. Provide a brief reasoning for each relevant article
+6. Only include articles with relevance score >= {config.relevance_threshold}
+7. Provide a brief reasoning for each relevant article
 
 RESPOND IN VALID JSON FORMAT:
 {{
@@ -116,13 +134,13 @@ RESPOND IN VALID JSON FORMAT:
         {{
             "article_number": 1,
             "relevance_score": 0.9,
-            "reasoning": "Brief explanation of why this article is relevant",
+            "reasoning": "Brief explanation of why this article is relevant and not excluded",
             "matched_keywords": ["keyword1", "keyword2"]
         }}
     ]
 }}
 
-Only include articles that meet the relevance threshold of {config.relevance_threshold} or higher."""
+Only include articles that meet the relevance threshold of {config.relevance_threshold} or higher AND do not match exclusion criteria."""
         
         return prompt
     
@@ -261,6 +279,7 @@ def load_config_from_file(config_file: str = "filter_config.json") -> FilterConf
         return FilterConfig(
             primary_keyword=config_data["primary_keyword"],
             additional_keywords=config_data["additional_keywords"],
+            exclusion_keywords=config_data.get("exclusion_keywords", []),
             relevance_threshold=config_data.get("relevance_threshold", 0.6),
             max_articles_to_process=config_data.get("max_articles_to_process", 20)
         )
@@ -269,6 +288,7 @@ def load_config_from_file(config_file: str = "filter_config.json") -> FilterConf
         return FilterConfig(
             primary_keyword="quantum",
             additional_keywords=["energy", "battery", "solar", "sensor", "engine", "refrigerator", "sensing", "storage", "efficiency"],
+            exclusion_keywords=[],
             relevance_threshold=0.6,
             max_articles_to_process=20
         )
