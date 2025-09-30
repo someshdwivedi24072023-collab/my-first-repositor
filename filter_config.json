@@ -1,0 +1,17 @@
+{
+    "primary_keyword": "quantum",
+    "additional_keywords": [
+        "energy",
+        "battery",
+        "solar",
+        "sensor",
+        "engine",
+        "refrigerator",
+        "sensing",
+        "storage",
+        "efficiency"
+    ],
+    "relevance_threshold": 0.6,
+    "max_articles_to_process": 20,
+    "description": "Configuration for filtering quantum science articles with focus on practical applications in energy, sensing, and storage technologies"
+}
